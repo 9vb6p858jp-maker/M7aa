@@ -1,0 +1,333 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local LocalPlayer = Players.LocalPlayer
+
+if game:GetService("CoreGui"):FindFirstChild("M7A_Delta_Final_Fixed") then
+    game:GetService("CoreGui")["M7A_Delta_Final_Fixed"]:Destroy()
+end
+
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "M7A_Delta_Final_Fixed"
+ScreenGui.Parent = game:GetService("CoreGui")
+ScreenGui.ResetOnSpawn = false
+
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 520, 0, 210)
+MainFrame.Position = UDim2.new(0.5, -260, 0.2, 0)
+MainFrame.BackgroundColor3 = Color3.fromRGB(12, 12, 16)
+MainFrame.BackgroundTransparency = 0.15
+MainFrame.Active = true
+MainFrame.Parent = ScreenGui
+
+local Corner = Instance.new("UICorner", MainFrame)
+Corner.CornerRadius = UDim.new(0, 14)
+
+
+local DragArea = Instance.new("Frame", MainFrame)
+DragArea.Size = UDim2.new(1, 0, 0, 35)
+DragArea.BackgroundTransparency = 1
+DragArea.Active = true
+
+local dragging, dragInput, dragStart, startPos
+DragArea.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = MainFrame.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then dragging = false end
+        end)
+    end
+end)
+DragArea.InputChanged:Connect(function(input)
+    if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        dragInput = input
+    end
+end)
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        local delta = input.Position - dragStart
+        MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+
+local Title = Instance.new("TextLabel", DragArea)
+Title.Size = UDim2.new(0, 200, 1, 0)
+Title.Position = UDim2.new(0, 15, 0, 0)
+Title.Text = "⚡ M7A PANEL"
+Title.TextColor3 = Color3.fromRGB(0, 255, 200)
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 13
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.BackgroundTransparency = 1
+
+-- 🌟 
+local CloseBtn = Instance.new("TextButton", MainFrame)
+CloseBtn.Size = UDim2.new(0, 40, 0, 40) -- تكبير حجم الزر
+CloseBtn.Position = UDim2.new(1, -45, 0, 2)
+CloseBtn.Text = "✕" -- شكل الاكس
+CloseBtn.TextColor3 = Color3.fromRGB(255, 30, 30) -- لون أحمر فاقع وواضح
+CloseBtn.Font = Enum.Font.GothamBold -- خط عريض
+CloseBtn.TextSize = 18 -- تكبير حجم الخط داخل الزر
+CloseBtn.BackgroundTransparency = 1
+
+
+local LeftSide = Instance.new("Frame", MainFrame)
+LeftSide.Size = UDim2.new(0, 235, 1, -45)
+LeftSide.Position = UDim2.new(0, 15, 0, 40)
+LeftSide.BackgroundTransparency = 1
+
+local RightSide = Instance.new("Frame", MainFrame)
+RightSide.Size = UDim2.new(0, 235, 1, -45)
+RightSide.Position = UDim2.new(0, 270, 0, 40)
+RightSide.BackgroundTransparency = 1
+
+-- ==================== [ القسم الأيسر: الإحداثيات والانتقال اليدوي ] ====================
+
+local CoordLabel = Instance.new("TextLabel", LeftSide)
+CoordLabel.Size = UDim2.new(1, 0, 0, 28)
+CoordLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+CoordLabel.BackgroundTransparency = 0.5
+CoordLabel.Text = "X: 0 | Y: 0 | Z: 0"
+CoordLabel.TextColor3 = Color3.fromRGB(0, 255, 150)
+CoordLabel.Font = Enum.Font.Code
+CoordLabel.TextSize = 11
+Instance.new("UICorner", CoordLabel).CornerRadius = UDim.new(0, 6)
+
+local CopyBtn = Instance.new("TextButton", LeftSide)
+CopyBtn.Size = UDim2.new(1, 0, 0, 24)
+CopyBtn.Position = UDim2.new(0, 0, 0, 34)
+CopyBtn.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
+CopyBtn.Text = "📋 COPY COORDINATES"
+CopyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+CopyBtn.Font = Enum.Font.GothamBold
+CopyBtn.TextSize = 10
+Instance.new("UICorner", CopyBtn).CornerRadius = UDim.new(0, 5)
+
+local InputBox = Instance.new("TextBox", LeftSide)
+InputBox.Size = UDim2.new(0, 160, 0, 28)
+InputBox.Position = UDim2.new(0, 0, 0, 64)
+InputBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+InputBox.BackgroundTransparency = 0.5
+InputBox.PlaceholderText = "Paste coordinates..."
+InputBox.Text = ""
+InputBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+InputBox.Font = Enum.Font.SourceSans
+InputBox.TextSize = 12
+InputBox.ClearTextOnFocus = false
+Instance.new("UICorner", InputBox).CornerRadius = UDim.new(0, 5)
+
+local GoBtn = Instance.new("TextButton", LeftSide)
+GoBtn.Size = UDim2.new(0, 70, 0, 28)
+GoBtn.Position = UDim2.new(0, 165, 0, 64)
+GoBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+GoBtn.Text = "GO"
+GoBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+GoBtn.Font = Enum.Font.GothamBold
+GoBtn.TextSize = 11
+Instance.new("UICorner", GoBtn).CornerRadius = UDim.new(0, 5)
+
+local SpawnBtn = Instance.new("TextButton", LeftSide)
+SpawnBtn.Size = UDim2.new(1, 0, 0, 30)
+SpawnBtn.Position = UDim2.new(0, 0, 0, 98)
+SpawnBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 100)
+SpawnBtn.Text = "📍 Teleport to Spawn Point"
+SpawnBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpawnBtn.Font = Enum.Font.GothamBold
+SpawnBtn.TextSize = 11
+Instance.new("UICorner", SpawnBtn).CornerRadius = UDim.new(0, 6)
+
+
+
+local speedValue = 16
+local jumpValue = 50
+
+local function MakeSafeSlider(parent, name, min, max, default, posY, callback)
+    local Label = Instance.new("TextLabel", parent)
+    Label.Size = UDim2.new(1, 0, 0, 16)
+    Label.Position = UDim2.new(0, 0, 0, posY)
+    Label.Text = name .. ": " .. default
+    Label.TextColor3 = Color3.fromRGB(220, 220, 220)
+    Label.Font = Enum.Font.GothamBold
+    Label.TextSize = 10
+    Label.TextXAlignment = Enum.TextXAlignment.Left
+    Label.BackgroundTransparency = 1
+
+    local Bar = Instance.new("Frame", parent)
+    Bar.Size = UDim2.new(1, 0, 0, 6)
+    Bar.Position = UDim2.new(0, 0, 0, posY + 18)
+    Bar.BackgroundColor3 = Color3.fromRGB(45, 45, 50)
+    Instance.new("UICorner", Bar)
+
+    local Fill = Instance.new("Frame", Bar)
+    Fill.Size = UDim2.new((default - min) / (max - min), 0, 1, 0)
+    Fill.BackgroundColor3 = Color3.fromRGB(0, 255, 200)
+    Instance.new("UICorner", Fill)
+
+    local Btn = Instance.new("TextButton", Bar)
+    Btn.Size = UDim2.new(0, 14, 0, 14)
+    Btn.Position = UDim2.new((default - min) / (max - min), -7, 0.5, -7)
+    Btn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Btn.Text = ""
+    Instance.new("UICorner", Btn)
+
+    local drag = false
+    local function update(input)
+        local x = math.clamp((input.Position.X - Bar.AbsolutePosition.X) / Bar.AbsoluteSize.X, 0, 1)
+        Fill.Size = UDim2.new(x, 0, 1, 0)
+        Btn.Position = UDim2.new(x, -7, 0.5, -7)
+        local val = math.round(min + (max - min) * x)
+        Label.Text = name .. ": " .. val
+        callback(val)
+    end
+
+    Btn.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then drag = true end
+    end)
+    UserInputService.InputChanged:Connect(function(input)
+        if drag and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then update(input) end
+    end)
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then drag = false end
+    end)
+end
+
+MakeSafeSlider(RightSide, "WalkSpeed", 16, 250, 16, 0, function(v) speedValue = v end)
+MakeSafeSlider(RightSide, "JumpPower", 0, 400, 50, 32, function(v) jumpValue = v end)
+
+
+local DropdownBtn = Instance.new("TextButton", RightSide)
+DropdownBtn.Size = UDim2.new(1, 0, 0, 30)
+DropdownBtn.Position = UDim2.new(0, 0, 0, 75)
+DropdownBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+DropdownBtn.Text = "👤 Choose Player  ▼"
+DropdownBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+DropdownBtn.Font = Enum.Font.GothamBold
+DropdownBtn.TextSize = 11
+Instance.new("UICorner", DropdownBtn).CornerRadius = UDim.new(0, 5)
+
+local DropdownContainer = Instance.new("Frame", ScreenGui)
+DropdownContainer.Size = UDim2.new(0, 235, 0, 120)
+DropdownContainer.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+DropdownContainer.Visible = false
+Instance.new("UICorner", DropdownContainer).CornerRadius = UDim.new(0, 6)
+
+RunService.RenderStepped:Connect(function()
+    if DropdownContainer.Visible then
+        DropdownContainer.Position = UDim2.new(0, DropdownBtn.AbsolutePosition.X, 0, DropdownBtn.AbsolutePosition.Y + 34)
+    end
+end)
+
+local PlayerScroll = Instance.new("ScrollingFrame", DropdownContainer)
+PlayerScroll.Size = UDim2.new(1, -10, 1, -10)
+PlayerScroll.Position = UDim2.new(0, 5, 0, 5)
+PlayerScroll.BackgroundTransparency = 1
+PlayerScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+PlayerScroll.ScrollBarThickness = 3
+
+local ListLayout = Instance.new("UIListLayout", PlayerScroll)
+ListLayout.Padding = UDim.new(0, 4)
+
+local function refreshList()
+    for _, item in ipairs(PlayerScroll:GetChildren()) do if item:IsA("TextButton") then item:Destroy() end end
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p ~= LocalPlayer then
+            local pBtn = Instance.new("TextButton", PlayerScroll)
+            pBtn.Size = UDim2.new(1, 0, 0, 24)
+            pBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+            pBtn.Text = p.DisplayName
+            pBtn.TextColor3 = Color3.fromRGB(230, 230, 230)
+            pBtn.Font = Enum.Font.Gotham
+            pBtn.TextSize = 10
+            Instance.new("UICorner", pBtn).CornerRadius = UDim.new(0, 4)
+            
+            pBtn.MouseButton1Click:Connect(function()
+                pcall(function()
+                    if p.Character and p.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                        LocalPlayer.Character.HumanoidRootPart.CFrame = p.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, -3)
+                        DropdownContainer.Visible = false
+                        DropdownBtn.Text = "👤 " .. p.DisplayName .. "  ▼"
+                    end
+                end)
+            end)
+        end
+    end
+    PlayerScroll.CanvasSize = UDim2.new(0, 0, 0, ListLayout.AbsoluteContentSize.Y + 5)
+end
+
+DropdownBtn.MouseButton1Click:Connect(function()
+    DropdownContainer.Visible = not DropdownContainer.Visible
+    if DropdownContainer.Visible then refreshList() end
+end)
+
+Players.PlayerAdded:Connect(refreshList) Players.PlayerRemoving:Connect(refreshList)
+
+
+
+task.spawn(function()
+    while task.wait(0.05) do
+        pcall(function()
+            local char = LocalPlayer.Character
+            local hum = char and char:FindFirstChildOfClass("Humanoid")
+            if hum then
+                hum.WalkSpeed = speedValue
+                if jumpValue == 0 then
+                    hum.JumpPower = 0
+                    hum.JumpHeight = 0
+                else
+                    hum.UseJumpPower = true 
+                    hum.JumpPower = jumpValue
+                end
+            end
+        end)
+    end
+end)
+
+local rawText = ""
+RunService.Heartbeat:Connect(function()
+    pcall(function()
+        local char = LocalPlayer.Character
+        if char and char:FindFirstChild("HumanoidRootPart") then
+            local pos = char.HumanoidRootPart.Position
+            CoordLabel.Text = string.format("X: %.1f | Y: %.1f | Z: %.1f", pos.X, pos.Y, pos.Z)
+            rawText = string.format("%.1f, %.1f, %.1f", pos.X, pos.Y, pos.Z)
+        end
+    end)
+end)
+
+CopyBtn.MouseButton1Click:Connect(function()
+    local setClip = setclipboard or toclipboard or (Clipboard and Clipboard.set)
+    if setClip and rawText ~= "" then setClip(rawText) CopyBtn.Text = "COPIED! ✅" task.wait(0.8) CopyBtn.Text = "📋 COPY COORDINATES" end
+end)
+
+local spawnPos = nil
+if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then spawnPos = LocalPlayer.Character.HumanoidRootPart.Position end
+LocalPlayer.CharacterAdded:Connect(function(char) local hrp = char:WaitForChild("HumanoidRootPart", 10) if hrp then task.wait(0.5) spawnPos = hrp.Position end end)
+
+SpawnBtn.MouseButton1Click:Connect(function() pcall(function() if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and spawnPos then LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(spawnPos) end end) end)
+GoBtn.MouseButton1Click:Connect(function() pcall(function() local nums = {} for v in string.gmatch(InputBox.Text, "[-?%d+%.%d++]+") do table.insert(nums, tonumber(v)) end if #nums >= 3 and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(Vector3.new(nums[1], nums[2], nums[3])) end end) end)
+
+
+local OpenBtn = Instance.new("TextButton")
+OpenBtn.Size = UDim2.new(0, 52, 0, 52)
+OpenBtn.Position = UDim2.new(0, 20, 0, 20)
+OpenBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+OpenBtn.BackgroundTransparency = 0.85
+OpenBtn.Text = "M7A"
+OpenBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+OpenBtn.Font = Enum.Font.GothamBold
+OpenBtn.TextSize = 12
+OpenBtn.Visible = false
+OpenBtn.Active = true
+OpenBtn.Draggable = true
+OpenBtn.Parent = ScreenGui
+
+local CircleCorner = Instance.new("UICorner", OpenBtn)
+CircleCorner.CornerRadius = UDim.new(1, 0)
+
+CloseBtn.MouseButton1Click:Connect(function() MainFrame.Visible = false; DropdownContainer.Visible = false; OpenBtn.Visible = true end)
+OpenBtn.MouseButton1Click:Connect(function() MainFrame.Visible = true; OpenBtn.Visible = false end)
